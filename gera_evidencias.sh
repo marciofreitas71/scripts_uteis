@@ -50,6 +50,9 @@ mkdir -p "$OUTPUT_DIR"
 # Obtém a lista de autores únicos no repositório
 IFS=$'\n' read -rd '' -a authors < <(git log --format='%aN' | sort -u)
 
+# Adiciona a opção de todos os usuários
+authors+=("Todos os Usuários")
+
 # Lista os autores e solicita que o usuário escolha um
 echo "Selecione o número do usuário para gerar o relatório de commits:"
 for i in "${!authors[@]}"; do
@@ -84,8 +87,12 @@ for branch in $branches; do
     # Faz checkout para a branch
     git checkout $branch
 
-    # Coleta o log de commits
-    commits=$(git log --since="$START_DATE" --until="$END_DATE" --author="$SELECTED_USER" --pretty=format:"%ad - %h : %s" --date=format:'%d/%m/%Y')
+    # Coleta o log de commits de acordo com o usuário selecionado
+    if [ "$SELECTED_USER" = "Todos os Usuários" ]; then
+        commits=$(git log --since="$START_DATE" --until="$END_DATE" --reverse --pretty=format:"%ad - %an : %s" --date=format:'%d/%m/%Y')
+    else
+        commits=$(git log --since="$START_DATE" --until="$END_DATE" --reverse --author="$SELECTED_USER" --pretty=format:"%ad - %h : %s" --date=format:'%d/%m/%Y')
+    fi
 
     # Verifica se há commits
     if [ -n "$commits" ]; then
