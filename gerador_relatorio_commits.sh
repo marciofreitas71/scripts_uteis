@@ -75,7 +75,7 @@ START_YEAR=$(echo "$START_DATE" | cut -d'-' -f3)
 PERIOD="$START_MONTH-$START_YEAR"
 
 # Cria o diretório 'evidencias' na raiz do projeto se não existir
-OUTPUT_DIR="$PWD/evidencias"
+OUTPUT_DIR="$PWD/relatorios_commits"
 mkdir -p "$OUTPUT_DIR"
 
 # Obtém a lista de autores únicos no repositório
