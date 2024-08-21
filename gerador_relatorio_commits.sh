@@ -1,5 +1,28 @@
 #!/bin/bash
 
+# Detecta o sistema operacional
+OS_TYPE=$(uname)
+
+# Função para selecionar a pasta do projeto
+select_project_dir() {
+    if [[ "$OS_TYPE" == "Linux" ]]; then
+        PROJECT_DIR=$(zenity --file-selection --directory --title="Selecione a pasta do projeto")
+    elif [[ "$OS_TYPE" == "MINGW64_NT"* || "$OS_TYPE" == "MSYS_NT"* ]]; then
+        PROJECT_DIR=$(powershell -Command "Add-Type -AssemblyName System.Windows.Forms; \
+        \$folderBrowser = New-Object System.Windows.Forms.FolderBrowserDialog; \
+        \$result = \$folderBrowser.ShowDialog(); \
+        if (\$result -eq 'OK') { \$folderBrowser.SelectedPath }")
+    else
+        echo "Sistema operacional não suportado."
+        exit 1
+    fi
+
+    if [ -z "$PROJECT_DIR" ]; then
+        echo "Nenhuma pasta selecionada. Saindo..."
+        exit 1
+    fi
+}
+
 # Obtém o nome do usuário e e-mail configurados no Git
 DEFAULT_USER_NAME=$(git config user.name)
 DEFAULT_USER_EMAIL=$(git config user.email)
@@ -59,13 +82,8 @@ while true; do
     fi
 done
 
-# Abre uma janela para selecionar a pasta do projeto
-PROJECT_DIR=$(zenity --file-selection --directory --title="Selecione a pasta do projeto")
-
-if [ -z "$PROJECT_DIR" ]; then
-    echo "Nenhuma pasta selecionada. Saindo..."
-    exit 1
-fi
+# Seleciona a pasta do projeto
+select_project_dir
 
 cd "$PROJECT_DIR" || { echo "Falha ao acessar a pasta do projeto. Saindo..."; exit 1; }
 
@@ -74,7 +92,7 @@ START_MONTH=$(echo "$START_DATE" | cut -d'-' -f2)
 START_YEAR=$(echo "$START_DATE" | cut -d'-' -f3)
 PERIOD="$START_MONTH-$START_YEAR"
 
-# Cria o diretório 'evidencias' na raiz do projeto se não existir
+# Cria o diretório 'relatorios_commits' na raiz do projeto se não existir
 OUTPUT_DIR="$PWD/relatorios_commits"
 mkdir -p "$OUTPUT_DIR"
 
@@ -145,7 +163,7 @@ if [ "$has_commits" = false ]; then
     echo "Não há commits no período de $START_DATE a $END_DATE para o usuário $SELECTED_USER." >> "$OUTPUT_FILE"
 fi
 
-# Volta para a branch original
+# Volta para a branch original1
 git checkout "$current_branch"
 
 # Mensagem final informando o local do arquivo
