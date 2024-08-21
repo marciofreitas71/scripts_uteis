@@ -1,10 +1,31 @@
 #!/bin/bash
 
-# Informações do usuário e do projeto
-USER_NAME="Marcio Freitas"
-USER_EMAIL="msfreitas@tre-ba.jus.br"
-PROJECT_NAME="auto_candex"
+# Obtém o nome do usuário e e-mail configurados no Git
+DEFAULT_USER_NAME=$(git config user.name)
+DEFAULT_USER_EMAIL=$(git config user.email)
+
+# Caso as variáveis estejam vazias, tenta obter do Git global
+if [ -z "$DEFAULT_USER_NAME" ]; then
+    DEFAULT_USER_NAME=$(git config --global user.name)
+fi
+
+if [ -z "$DEFAULT_USER_EMAIL" ]; then
+    DEFAULT_USER_EMAIL=$(git config --global user.email)
+fi
+
+# Informações do projeto e data atual
+DEFAULT_PROJECT_NAME="nome_do_projeto"
 DATE=$(date +'%d/%m/%Y')
+
+# Solicita os dados do usuário, utilizando valores padrão, mas permitindo edição
+read -p "Digite o nome do usuário [$DEFAULT_USER_NAME]: " USER_NAME
+USER_NAME=${USER_NAME:-$DEFAULT_USER_NAME}
+
+read -p "Digite o e-mail do usuário [$DEFAULT_USER_EMAIL]: " USER_EMAIL
+USER_EMAIL=${USER_EMAIL:-$DEFAULT_USER_EMAIL}
+
+read -p "Digite o nome do projeto [$DEFAULT_PROJECT_NAME]: " PROJECT_NAME
+PROJECT_NAME=${PROJECT_NAME:-$DEFAULT_PROJECT_NAME}
 
 # Função para validar o formato da data
 validate_date_format() {
@@ -37,6 +58,16 @@ while true; do
         echo "Formato de data inválido. Por favor, tente novamente."
     fi
 done
+
+# Abre uma janela para selecionar a pasta do projeto
+PROJECT_DIR=$(zenity --file-selection --directory --title="Selecione a pasta do projeto")
+
+if [ -z "$PROJECT_DIR" ]; then
+    echo "Nenhuma pasta selecionada. Saindo..."
+    exit 1
+fi
+
+cd "$PROJECT_DIR" || { echo "Falha ao acessar a pasta do projeto. Saindo..."; exit 1; }
 
 # Extrai o mês e o ano da data de início para o nome do arquivo
 START_MONTH=$(echo "$START_DATE" | cut -d'-' -f2)
