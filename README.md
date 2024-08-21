@@ -1,6 +1,6 @@
 # Script de Geração de Relatório de Commits
 
-Este script Bash (auto_candex.sh) foi desenvolvido para gerar um relatório detalhado de commits realizados em um projeto Git, dentro de um intervalo de datas especificado. Ele permite que você escolha um autor específico ou todos os autores do repositório para incluir no relatório. O relatório é gerado em um arquivo de texto dentro de uma pasta chamada evidencias, criada na raiz do projeto.
+Este script Bash foi desenvolvido para gerar um relatório detalhado de commits realizados em um projeto Git, dentro de um intervalo de datas especificado. Ele permite que você escolha um autor específico ou todos os autores do repositório para incluir no relatório. O relatório é gerado em um arquivo de texto dentro de uma pasta chamada evidencias, criada na raiz do projeto.
 
 ## Funcionalidades
 - Validação de Data: O script valida o formato das datas de início e fim do período.
